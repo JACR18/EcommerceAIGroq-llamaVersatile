@@ -18,11 +18,7 @@
     nav { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(14px); z-index: 50; }
     .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 900; display: flex; align-items: center; gap: 8px; }
     .nav-logo .badge { background: var(--accent); color: #000; font-family: 'DM Sans', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; }
-    .nav-right { display: flex; gap: 6px; }
-    .nav-pill { padding: 6px 13px; border-radius: 999px; font-size: 0.76rem; font-weight: 500; color: var(--muted); border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; background: transparent; font-family: 'DM Sans', sans-serif; }
-    .nav-pill:hover { color: var(--text); border-color: var(--border2); }
-    .nav-pill.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
+   
     /* HERO */
     .hero { padding: 38px 32px 28px; border-bottom: 1px solid var(--border); background: radial-gradient(ellipse at 70% 50%, rgba(245,200,66,0.06) 0%, transparent 60%), var(--bg); }
     .hero-live { display: inline-flex; align-items: center; gap: 7px; background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.22); color: var(--accent); font-size: 0.68rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 11px; border-radius: 999px; margin-bottom: 14px; }
@@ -192,11 +188,6 @@
 <!-- NAV -->
 <nav>
   <div class="nav-logo">E <span class="badge">Commerce</span></div>
-  <div class="nav-right">
-    <button class="nav-pill active">Discover</button>
-    <button class="nav-pill">Trending</button>
-    <button class="nav-pill">Compare</button>
-  </div>
 </nav>
 
 <!-- HERO -->
