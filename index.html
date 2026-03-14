@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopAI – Smart Product Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a; --surface: #141414; --surface2: #1c1c1c; --surface3: #242424;
+      --border: #2c2c2c; --border2: #383838; --accent: #f5c842; --accent2: #e8a020;
+      --text: #f0ece4; --muted: #777; --muted2: #555; --radius: 14px;
+      --shopee: #ee4d2d;
+      --lazada: #4a5ff7;
+      --amazon: #ff9900;
+      --ebay: #e53238;
+      --aliexpress: #ff4747;
+      --temu: #fa5130;
+      --tiktok: #010101;
+      --tiktok-accent: #fe2c55;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* NAV */
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(14px); z-index: 50; }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+    .nav-logo .badge { background: var(--accent); color: #000; font-family: 'DM Sans', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; }
+    .nav-right { display: flex; gap: 6px; }
+    .nav-pill { padding: 6px 13px; border-radius: 999px; font-size: 0.76rem; font-weight: 500; color: var(--muted); border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; background: transparent; font-family: 'DM Sans', sans-serif; }
+    .nav-pill:hover { color: var(--text); border-color: var(--border2); }
+    .nav-pill.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    /* HERO */
+    .hero { padding: 38px 32px 28px; border-bottom: 1px solid var(--border); background: radial-gradient(ellipse at 70% 50%, rgba(245,200,66,0.06) 0%, transparent 60%), var(--bg); }
+    .hero-live { display: inline-flex; align-items: center; gap: 7px; background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.22); color: var(--accent); font-size: 0.68rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 11px; border-radius: 999px; margin-bottom: 14px; }
+    .hero-live::before { content:''; width:5px; height:5px; background:var(--accent); border-radius:50%; animation: blink 1.8s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.75rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.1; letter-spacing: -0.5px; max-width: 540px; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p { margin-top: 10px; color: var(--muted); font-size: 0.9rem; max-width: 500px; line-height: 1.7; }
+
+    /* PLATFORM FILTER */
+    .platform-section-wrap { margin-top: 20px; }
+    .platform-section-label { font-size: 0.72rem; color: var(--muted2); font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; }
+    .platform-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+    .platform-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 13px; border-radius: 8px;
+      font-size: 0.76rem; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+      border: 1.5px solid var(--border);
+      background: var(--surface2); color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+    }
+    .platform-btn .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .platform-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    /* active states per platform */
+    .platform-btn.act-all        { border-color: var(--accent);       background: rgba(245,200,66,0.08);  color: var(--accent); }
+    .platform-btn.act-shopee     { border-color: var(--shopee);       background: rgba(238,77,45,0.1);    color: #ff7a5c; }
+    .platform-btn.act-lazada     { border-color: var(--lazada);       background: rgba(74,95,247,0.1);    color: #7b8fff; }
+    .platform-btn.act-amazon     { border-color: var(--amazon);       background: rgba(255,153,0,0.1);    color: #ffb733; }
+    .platform-btn.act-ebay       { border-color: var(--ebay);         background: rgba(229,50,56,0.1);    color: #ff6b6f; }
+    .platform-btn.act-aliexpress { border-color: var(--aliexpress);   background: rgba(255,71,71,0.1);    color: #ff7e7e; }
+    .platform-btn.act-temu       { border-color: var(--temu);         background: rgba(250,81,48,0.1);    color: #ff8060; }
+    .platform-btn.act-tiktok     { border-color: var(--tiktok-accent);background: rgba(254,44,85,0.1);    color: #fe6b8a; }
+
+    /* CHIPS */
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+    .chip { padding: 6px 13px; background: var(--surface2); border: 1px solid var(--border); border-radius: 999px; font-size: 0.76rem; color: var(--muted); cursor: pointer; transition: all 0.18s; }
+    .chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+    /* MAIN */
+    .main { flex: 1; display: flex; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; padding: 0 32px; }
+
+    /* CHAT */
+    #chat { padding: 22px 0; display: flex; flex-direction: column; gap: 14px; min-height: 280px; max-height: 440px; overflow-y: auto; }
+    #chat::-webkit-scrollbar { width: 3px; }
+    #chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .message { display: flex; flex-direction: column; gap: 4px; max-width: 84%; animation: fadeUp 0.22s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .message.user { align-self: flex-end; align-items: flex-end; }
+    .message.ai   { align-self: flex-start; align-items: flex-start; }
+    .msg-label { font-size: 0.63rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted2); padding: 0 3px; }
+    .msg-bubble { padding: 11px 15px; border-radius: var(--radius); font-size: 0.87rem; line-height: 1.7; }
+    .message.user .msg-bubble { background: var(--accent); color: #000; font-weight: 500; border-bottom-right-radius: 4px; }
+    .message.ai   .msg-bubble { background: var(--surface2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+    .msg-bubble strong { color: var(--accent); font-weight: 600; }
+
+    .loading-dots { display: flex; gap: 4px; padding: 13px 15px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); border-bottom-left-radius: 4px; }
+    .loading-dots span { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: dot 1.2s infinite; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot { 0%,80%,100%{transform:translateY(0);opacity:.4} 40%{transform:translateY(-5px);opacity:1} }
+
+    .divider { height: 1px; background: var(--border); }
+
+    /* INPUT */
+    .input-section { padding: 18px 0 26px; }
+    .input-wrap { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 7px 7px 7px 18px; transition: border-color 0.2s, box-shadow 0.2s; }
+    .input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(245,200,66,0.07); }
+    #prompt { flex: 1; background: transparent; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text); padding: 7px 0; }
+    #prompt::placeholder { color: var(--muted2); }
+    #send-btn { display: flex; align-items: center; gap: 7px; padding: 10px 20px; background: var(--accent); color: #000; border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.18s; flex-shrink: 0; }
+    #send-btn:hover { background: var(--accent2); transform: scale(1.02); }
+    #send-btn:active { transform: scale(0.98); }
+    #send-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .input-foot { display: flex; justify-content: space-between; margin-top: 8px; padding: 0 3px; font-size: 0.7rem; color: var(--muted2); }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 13px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .footer-tags { display: flex; gap: 14px; flex-wrap: wrap; }
+    .footer-tag { font-size: 0.68rem; color: #444; display: flex; align-items: center; gap: 5px; }
+    .footer-tag::before { content:'✓'; color:#3a3; }
+
+    /* PRODUCT GRID */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 11px; margin-top: 10px; width: 100%; }
+    .product-card { background: var(--surface3); border: 1px solid var(--border); border-radius: 12px; padding: 13px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+    .product-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+    .product-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+
+    /* card top stripe colors */
+    .pc-shopee::before     { background: var(--shopee); }
+    .pc-lazada::before     { background: var(--lazada); }
+    .pc-amazon::before     { background: var(--amazon); }
+    .pc-ebay::before       { background: var(--ebay); }
+    .pc-aliexpress::before { background: var(--aliexpress); }
+    .pc-temu::before       { background: var(--temu); }
+    .pc-tiktok::before     { background: var(--tiktok-accent); }
+    .pc-multi::before      { background: linear-gradient(90deg,var(--shopee),var(--lazada),var(--amazon),var(--tiktok-accent)); }
+
+    /* platform badge on card */
+    .card-platform { display: inline-flex; align-items: center; gap: 5px; font-size: 0.63rem; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; margin-bottom: 7px; }
+    .cpb-shopee     { background: rgba(238,77,45,0.15);  color: #ff7a5c; }
+    .cpb-lazada     { background: rgba(74,95,247,0.15);  color: #7b8fff; }
+    .cpb-amazon     { background: rgba(255,153,0,0.15);  color: #ffb733; }
+    .cpb-ebay       { background: rgba(229,50,56,0.15);  color: #ff6b6f; }
+    .cpb-aliexpress { background: rgba(255,71,71,0.15);  color: #ff9090; }
+    .cpb-temu       { background: rgba(250,81,48,0.15);  color: #ff8c72; }
+    .cpb-tiktok     { background: rgba(254,44,85,0.15);  color: #fe6b8a; }
+    .cpb-multi      { background: rgba(245,200,66,0.1);  color: var(--accent); }
+
+    .card-name { font-size: 0.82rem; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-price { font-size: 0.98rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .card-rating { font-size: 0.72rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+    .stars { color: #f5c842; font-size: 0.68rem; letter-spacing: 1px; }
+    .card-view-btn { margin-top: 9px; width: 100%; padding: 7px; background: transparent; border: 1px solid var(--border2); border-radius: 7px; color: var(--muted); font-size: 0.72rem; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.18s; }
+    .card-view-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; transform: translateY(20px) scale(0.97); transition: transform 0.25s; }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+    .modal::-webkit-scrollbar { width: 3px; }
+    .modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .modal-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 20px 22px 14px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; gap: 12px; }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; line-height: 1.35; }
+    .modal-close { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.18s; }
+    .modal-close:hover { background: var(--surface3); color: var(--text); }
+    .modal-body { padding: 18px 22px 24px; }
+    .modal-desc { font-size: 0.86rem; color: var(--muted); line-height: 1.75; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+
+    /* platform sections inside modal */
+    .psec { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+    .psec-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid var(--border); }
+    .psec-name { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 700; }
+    .psec-logo { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; color: #fff; flex-shrink: 0; }
+    .psl-shopee     { background: var(--shopee); }
+    .psl-lazada     { background: var(--lazada); }
+    .psl-amazon     { background: #232f3e; border: 1px solid var(--amazon); }
+    .psl-ebay       { background: var(--ebay); }
+    .psl-aliexpress { background: var(--aliexpress); }
+    .psl-temu       { background: var(--temu); }
+    .psl-tiktok     { background: #111; border: 1px solid var(--tiktok-accent); }
+
+    .psec-body { padding: 11px 15px; }
+    .prow { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+    .prow:last-of-type { border-bottom: none; }
+    .prow-label { color: var(--muted); font-size: 0.76rem; }
+    .prow-val { font-weight: 600; color: var(--text); }
+    .prow-val.price  { color: var(--accent); font-size: 0.96rem; }
+    .prow-val.rating { color: #f5c842; }
+
+    .buy-btn { display: block; width: 100%; padding: 10px; margin-top: 11px; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.18s; border: none; text-align: center; }
+    .bb-shopee     { background: var(--shopee);       color: #fff; }
+    .bb-shopee:hover     { background: #c93a1e; }
+    .bb-lazada     { background: var(--lazada);       color: #fff; }
+    .bb-lazada:hover     { background: #3245d4; }
+    .bb-amazon     { background: var(--amazon);       color: #111; }
+    .bb-amazon:hover     { background: #e68a00; }
+    .bb-ebay       { background: var(--ebay);         color: #fff; }
+    .bb-ebay:hover       { background: #b82029; }
+    .bb-aliexpress { background: var(--aliexpress);   color: #fff; }
+    .bb-aliexpress:hover { background: #cc2a2a; }
+    .bb-temu       { background: var(--temu);         color: #fff; }
+    .bb-temu:hover       { background: #d43d20; }
+    .bb-tiktok     { background: var(--tiktok-accent);color: #fff; }
+    .bb-tiktok:hover     { background: #cc1e42; }
+
+    .price-compare { margin-top: 14px; padding: 12px 14px; background: rgba(245,200,66,0.06); border: 1px solid rgba(245,200,66,0.15); border-radius: 9px; font-size: 0.8rem; color: var(--accent); text-align: center; font-weight: 600; }
+    .best-deal-badge { display: inline-block; background: rgba(74,210,100,0.12); border: 1px solid rgba(74,210,100,0.3); color: #4ad264; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 5px; margin-left: 8px; vertical-align: middle; }
+
+    @media (max-width: 620px) {
+      nav, .hero, .main, footer { padding-left: 16px; padding-right: 16px; }
+      .hero h1 { font-size: 1.6rem; }
+      .nav-right { display: none; }
+      .product-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ShopAI <span class="badge">Groq</span></div>
+  <div class="nav-right">
+    <button class="nav-pill active">Discover</button>
+    <button class="nav-pill">Trending</button>
+    <button class="nav-pill">Compare</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-live">AI-Powered Shopping</div>
+  <h1>Find the <em>best deal</em><br>across every platform</h1>
+  <p>Search once — compare prices across Shopee, Lazada, Amazon, eBay, AliExpress, Temu, and TikTok Shop all in one place.</p>
+
+  <!-- PLATFORM FILTER -->
+  <div class="platform-section-wrap">
+    <div class="platform-section-label">Filter by platform</div>
+    <div class="platform-grid" id="platform-grid">
+      <button class="platform-btn act-all"    data-p="all"         onclick="setPlatform(this)"><span class="dot" style="background:var(--accent)"></span>All Platforms</button>
+      <button class="platform-btn"            data-p="shopee"      onclick="setPlatform(this)"><span class="dot" style="background:var(--shopee)"></span>Shopee</button>
+      <button class="platform-btn"            data-p="lazada"      onclick="setPlatform(this)"><span class="dot" style="background:var(--lazada)"></span>Lazada</button>
+      <button class="platform-btn"            data-p="amazon"      onclick="setPlatform(this)"><span class="dot" style="background:var(--amazon)"></span>Amazon</button>
+      <button class="platform-btn"            data-p="ebay"        onclick="setPlatform(this)"><span class="dot" style="background:var(--ebay)"></span>eBay</button>
+      <button class="platform-btn"            data-p="aliexpress"  onclick="setPlatform(this)"><span class="dot" style="background:var(--aliexpress)"></span>AliExpress</button>
+      <button class="platform-btn"            data-p="temu"        onclick="setPlatform(this)"><span class="dot" style="background:var(--temu)"></span>Temu</button>
+      <button class="platform-btn"            data-p="tiktok"      onclick="setPlatform(this)"><span class="dot" style="background:var(--tiktok-accent)"></span>TikTok Shop</button>
+    </div>
+  </div>
+
+  <!-- QUICK CHIPS -->
+  <div class="chips">
+    <div class="chip" onclick="fillPrompt('Best gaming laptop under ₱60,000')">💻 Gaming laptops</div>
+    <div class="chip" onclick="fillPrompt('Top wireless earbuds under ₱2,000')">🎧 Wireless earbuds</div>
+    <div class="chip" onclick="fillPrompt('Best budget Android smartphone 2026')">📱 Budget phones</div>
+    <div class="chip" onclick="fillPrompt('Affordable mechanical keyboard for coding')">⌨️ Keyboards</div>
+    <div class="chip" onclick="fillPrompt('Best skincare products under ₱1,500')">✨ Skincare</div>
+    <div class="chip" onclick="fillPrompt('Cheap but good running shoes')">👟 Running shoes</div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="main">
+  <div id="chat">
+    <div class="message ai">
+      <div class="msg-label">ShopAI</div>
+      <div class="msg-bubble">
+        👋 Hello! Tell me what you're shopping for — I'll search <strong>Shopee, Lazada, Amazon, eBay, AliExpress, Temu</strong> and <strong>TikTok Shop</strong> and show the best picks side by side. Click any card to compare prices and ratings across platforms.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="input-section">
+    <div class="input-wrap">
+      <span style="color:var(--muted2);font-size:1rem;flex-shrink:0">🔍</span>
+      <input type="text" id="prompt" placeholder="What are you looking for today?" autofocus/>
+      <button id="send-btn" onclick="sendQuery()">Search →</button>
+    </div>
+    <div class="input-foot">
+      <span>Press Enter · Be specific for better results</span>
+      <span>Powered by <strong style="color:#555">Groq + LLaMA 3.3</strong></span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-tags">
+    <div class="footer-tag">Shopee PH</div>
+    <div class="footer-tag">Lazada PH</div>
+    <div class="footer-tag">Amazon</div>
+    <div class="footer-tag">eBay</div>
+    <div class="footer-tag">AliExpress</div>
+    <div class="footer-tag">Temu</div>
+    <div class="footer-tag">TikTok Shop</div>
+  </div>
+  <div style="font-size:0.68rem;color:#333">ShopAI © 2026</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Product Details</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+  // ── PASTE YOUR GROQ API KEY BELOW ──
+  const GROQ_API_KEY = "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";
+  const MODEL = "llama-3.3-70b-versatile";
+
+  // Platform config: key → { label, color, logoClass, btnClass, buyClass, currencyNote }
+  const PLATFORMS = {
+    shopee:     { label: 'Shopee Philippines',  color: '#ff7a5c', logoClass: 'psl-shopee',     buyClass: 'bb-shopee',     currency: '₱' },
+    lazada:     { label: 'Lazada Philippines',  color: '#7b8fff', logoClass: 'psl-lazada',     buyClass: 'bb-lazada',     currency: '₱' },
+    amazon:     { label: 'Amazon',              color: '#ffb733', logoClass: 'psl-amazon',     buyClass: 'bb-amazon',     currency: '$'  },
+    ebay:       { label: 'eBay',                color: '#ff6b6f', logoClass: 'psl-ebay',       buyClass: 'bb-ebay',       currency: '$'  },
+    aliexpress: { label: 'AliExpress',          color: '#ff9090', logoClass: 'psl-aliexpress', buyClass: 'bb-aliexpress', currency: '$'  },
+    temu:       { label: 'Temu',                color: '#ff8c72', logoClass: 'psl-temu',       buyClass: 'bb-temu',       currency: '$'  },
+    tiktok:     { label: 'TikTok Shop',         color: '#fe6b8a', logoClass: 'psl-tiktok',     buyClass: 'bb-tiktok',     currency: '₱' },
+  };
+
+  const LOGO_LETTERS = { shopee:'S', lazada:'L', amazon:'A', ebay:'e', aliexpress:'AE', temu:'T', tiktok:'TT' };
+
+  let currentPlatform = 'all';
+
+  function setPlatform(btn) {
+    currentPlatform = btn.dataset.p;
+    document.querySelectorAll('.platform-btn').forEach(b => {
+      b.className = 'platform-btn';
+    });
+    btn.className = `platform-btn act-${currentPlatform}`;
+  }
+
+  function fillPrompt(t) {
+    document.getElementById('prompt').value = t;
+    document.getElementById('prompt').focus();
+  }
+
+  function buildSystemPrompt() {
+    const allKeys = Object.keys(PLATFORMS);
+    const included = currentPlatform === 'all' ? allKeys : [currentPlatform];
+    const excluded = allKeys.filter(k => !included.includes(k));
+
+    const fieldDocs = allKeys.map(k =>
+      `  "${k}_price": "${PLATFORMS[k].currency}X.XX or ₱X,XXX" or null,\n` +
+      `  "${k}_rating": "4.7" or null,\n` +
+      `  "${k}_sold": "12,300 sold" or null,\n` +
+      `  "${k}_link": "https://..." or null`
+    ).join(',\n');
+
+    const exclusionNote = excluded.length
+      ? `Set all fields for these platforms to null (not included): ${excluded.join(', ')}.`
+      : 'Include all platforms.';
+
+    return `You are ShopAI, a product recommendation assistant. The user is primarily based in the Philippines but may also buy internationally.
+${exclusionNote}
+
+Return ONLY a valid raw JSON array (no markdown fences, no explanation) of 4–6 products.
+Each object must have exactly:
+{
+  "name": "Full product name",
+  "description": "1–2 sentence description and why it's a good buy.",
+  "platforms": ["shopee","lazada",...],
+${fieldDocs}
+}
+
+Use realistic 2026 prices. For PH platforms (shopee, lazada, tiktok) use Philippine Peso ₱. For global platforms (amazon, ebay, aliexpress, temu) use USD $. Only return the raw JSON array.`;
+  }
+
+  async function sendQuery() {
+    const input = document.getElementById('prompt');
+    const query = input.value.trim();
+    if (!query) return;
+
+    const btn = document.getElementById('send-btn');
+    btn.disabled = true;
+    addMsg('user', query);
+    input.value = '';
+    const loader = addLoader();
+
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: 'system', content: buildSystemPrompt() },
+            { role: 'user', content: query }
+          ],
+          temperature: 0.65,
+          max_tokens: 8192
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error?.message || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      const raw = data.choices?.[0]?.message?.content || '[]';
+      loader.remove();
+
+      let products = [];
+      try {
+        const cleaned = raw.replace(/```json|```/g, '').trim();
+        const start = cleaned.indexOf('[');
+        const end   = cleaned.lastIndexOf(']');
+        if (start === -1 || end === -1) throw new Error('no array');
+        products = JSON.parse(cleaned.slice(start, end + 1));
+      } catch(e) {
+        addMsg('ai', '⚠️ Could not parse response. Please try again.');
+        btn.disabled = false;
+        return;
+      }
+
+      renderProducts(products, query);
+    } catch(err) {
+      loader.remove();
+      addMsg('ai', `⚠️ ${escHtml(err.message)}`);
+      console.error(err);
+    }
+
+    btn.disabled = false;
+  }
+
+  function renderProducts(products, query) {
+    const chat = document.getElementById('chat');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'message ai';
+    wrapper.style.cssText = 'max-width:100%;width:100%';
+
+    const label = document.createElement('div');
+    label.className = 'msg-label';
+    label.textContent = 'ShopAI';
+
+    const intro = document.createElement('div');
+    intro.className = 'msg-bubble';
+    intro.innerHTML = `Found <strong>${products.length} products</strong> for "<em>${escHtml(query)}</em>" — click any card to compare across platforms.`;
+
+    const grid = document.createElement('div');
+    grid.className = 'product-grid';
+
+    products.forEach(p => {
+      const activePlatforms = (p.platforms || []).filter(k => PLATFORMS[k]);
+      const cardClass = activePlatforms.length === 1 ? `pc-${activePlatforms[0]}` : 'pc-multi';
+      const badgeClass = activePlatforms.length === 1 ? `cpb-${activePlatforms[0]}` : 'cpb-multi';
+      const badgeLabel = activePlatforms.length === 1
+        ? PLATFORMS[activePlatforms[0]].label.split(' ')[0]
+        : `${activePlatforms.length} Platforms`;
+
+      // best price across platforms
+      const prices = activePlatforms
+        .map(k => ({ k, v: parseFloat((p[`${k}_price`] || '').replace(/[^\d.]/g,'')) }))
+        .filter(x => !isNaN(x.v));
+      const cheapest = prices.length ? prices.reduce((a,b) => a.v <= b.v ? a : b) : null;
+      const displayPrice = cheapest
+        ? `${p[`${cheapest.k}_price`]}`
+        : (activePlatforms.map(k => p[`${k}_price`]).find(Boolean) || 'N/A');
+
+      const allRatings = activePlatforms.map(k => parseFloat(p[`${k}_rating`])).filter(n => !isNaN(n));
+      const avgRating = allRatings.length ? (allRatings.reduce((a,b)=>a+b,0)/allRatings.length).toFixed(1) : null;
+
+      const card = document.createElement('div');
+      card.className = `product-card ${cardClass}`;
+      card.innerHTML = `
+        <div class="card-platform ${badgeClass}">${badgeLabel}</div>
+        <div class="card-name">${escHtml(p.name)}</div>
+        <div class="card-price">${escHtml(displayPrice)}</div>
+        <div class="card-rating">
+          ${avgRating ? `<span class="stars">${starsHtml(parseFloat(avgRating))}</span><span>${avgRating}/5</span>` : '<span>No rating</span>'}
+        </div>
+        <button class="card-view-btn">Compare Prices →</button>
+      `;
+      card.addEventListener('click', () => openModal(p));
+      grid.appendChild(card);
+    });
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(intro);
+    wrapper.appendChild(grid);
+    chat.appendChild(wrapper);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function openModal(p) {
+    document.getElementById('modal-title').textContent = p.name;
+    const activePlatforms = (p.platforms || Object.keys(PLATFORMS)).filter(k => PLATFORMS[k] && p[`${k}_price`]);
+
+    let html = `<div class="modal-desc">${escHtml(p.description)}</div>`;
+
+    // find best deal
+    const priceList = activePlatforms
+      .map(k => ({ k, v: parseFloat((p[`${k}_price`]||'').replace(/[^\d.]/g,'')) }))
+      .filter(x => !isNaN(x.v));
+    const bestDeal = priceList.length ? priceList.reduce((a,b) => a.v <= b.v ? a : b).k : null;
+
+    activePlatforms.forEach(k => {
+      const cfg = PLATFORMS[k];
+      const price  = p[`${k}_price`];
+      const rating = p[`${k}_rating`];
+      const sold   = p[`${k}_sold`];
+      const link   = p[`${k}_link`];
+      if (!price && !rating) return;
+
+      const isBest = k === bestDeal && activePlatforms.length > 1;
+      html += `
+      <div class="psec">
+        <div class="psec-head">
+          <div class="psec-name">
+            <div class="psec-logo ${cfg.logoClass}">${LOGO_LETTERS[k]}</div>
+            <span style="color:${cfg.color}">${cfg.label}</span>
+            ${isBest ? '<span class="best-deal-badge">Best Price</span>' : ''}
+          </div>
+        </div>
+        <div class="psec-body">
+          <div class="prow"><span class="prow-label">Price</span><span class="prow-val price">${escHtml(price||'—')}</span></div>
+          <div class="prow"><span class="prow-label">Rating</span><span class="prow-val rating">${rating ? '★ '+rating+' / 5' : '—'}</span></div>
+          <div class="prow"><span class="prow-label">Units Sold</span><span class="prow-val">${escHtml(sold||'—')}</span></div>
+          ${link ? `<button class="buy-btn ${cfg.buyClass}" onclick="window.open('${link}','_blank')">Buy on ${cfg.label.split(' ')[0]} →</button>` : ''}
+        </div>
+      </div>`;
+    });
+
+    // price comparison summary
+    if (priceList.length > 1) {
+      priceList.sort((a,b) => a.v - b.v);
+      const cheapestK = priceList[0].k;
+      const pricestK  = priceList[priceList.length-1].k;
+      const savings = priceList[priceList.length-1].v - priceList[0].v;
+      const cheapestLabel = PLATFORMS[cheapestK].label.split(' ')[0];
+      const pricestLabel  = PLATFORMS[pricestK].label.split(' ')[0];
+      html += `<div class="price-compare">💡 ${cheapestLabel} has the best price — save up to ${p[`${cheapestK}_price`]?.includes('₱') ? '₱' : '$'}${savings.toFixed(2)} vs ${pricestLabel}</div>`;
+    }
+
+    document.getElementById('modal-body').innerHTML = html;
+    document.getElementById('modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function overlayClick(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function starsHtml(r) {
+    if (isNaN(r)) return '';
+    const full = Math.floor(r), half = r%1>=0.5?1:0, empty = 5-full-half;
+    return '★'.repeat(full)+(half?'½':'')+'☆'.repeat(empty);
+  }
+
+  function escHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function addMsg(sender, html) {
+    const chat = document.getElementById('chat');
+    const w = document.createElement('div'); w.className = `message ${sender}`;
+    const l = document.createElement('div'); l.className = 'msg-label'; l.textContent = sender==='user'?'You':'ShopAI';
+    const b = document.createElement('div'); b.className = 'msg-bubble'; b.innerHTML = html;
+    w.appendChild(l); w.appendChild(b); chat.appendChild(w);
+    chat.scrollTop = chat.scrollHeight; return w;
+  }
+
+  function addLoader() {
+    const chat = document.getElementById('chat');
+    const w = document.createElement('div'); w.className = 'message ai';
+    const l = document.createElement('div'); l.className = 'msg-label'; l.textContent = 'ShopAI';
+    const d = document.createElement('div'); d.className = 'loading-dots'; d.innerHTML = '<span></span><span></span><span></span>';
+    w.appendChild(l); w.appendChild(d); chat.appendChild(w);
+    chat.scrollTop = chat.scrollHeight; return w;
+  }
+
+  document.getElementById('prompt').addEventListener('keypress', e => { if (e.key==='Enter') sendQuery(); });
+  document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+</script>
+</body>
+</html>
