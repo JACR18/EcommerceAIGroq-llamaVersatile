@@ -11,14 +11,6 @@
       --bg: #0a0a0a; --surface: #141414; --surface2: #1c1c1c; --surface3: #242424;
       --border: #2c2c2c; --border2: #383838; --accent: #f5c842; --accent2: #e8a020;
       --text: #f0ece4; --muted: #777; --muted2: #555; --radius: 14px;
-      --shopee: #ee4d2d;
-      --lazada: #4a5ff7;
-      --amazon: #ff9900;
-      --ebay: #e53238;
-      --aliexpress: #ff4747;
-      --temu: #fa5130;
-      --tiktok: #010101;
-      --tiktok-accent: #fe2c55;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
 
@@ -54,18 +46,14 @@
       font-family: 'DM Sans', sans-serif;
       white-space: nowrap;
     }
-    .platform-btn .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .platform-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted2); flex-shrink: 0; }
     .platform-btn:hover { border-color: var(--border2); color: var(--text); }
-
-    /* active states per platform */
-    .platform-btn.act-all        { border-color: var(--accent);       background: rgba(245,200,66,0.08);  color: var(--accent); }
-    .platform-btn.act-shopee     { border-color: var(--shopee);       background: rgba(238,77,45,0.1);    color: #ff7a5c; }
-    .platform-btn.act-lazada     { border-color: var(--lazada);       background: rgba(74,95,247,0.1);    color: #7b8fff; }
-    .platform-btn.act-amazon     { border-color: var(--amazon);       background: rgba(255,153,0,0.1);    color: #ffb733; }
-    .platform-btn.act-ebay       { border-color: var(--ebay);         background: rgba(229,50,56,0.1);    color: #ff6b6f; }
-    .platform-btn.act-aliexpress { border-color: var(--aliexpress);   background: rgba(255,71,71,0.1);    color: #ff7e7e; }
-    .platform-btn.act-temu       { border-color: var(--temu);         background: rgba(250,81,48,0.1);    color: #ff8060; }
-    .platform-btn.act-tiktok     { border-color: var(--tiktok-accent);background: rgba(254,44,85,0.1);    color: #fe6b8a; }
+    .platform-btn.active {
+      border-color: var(--accent);
+      background: rgba(245,200,66,0.08);
+      color: var(--accent);
+    }
+    .platform-btn.active .dot { background: var(--accent); }
 
     /* CHIPS */
     .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
@@ -119,28 +107,17 @@
     .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 11px; margin-top: 10px; width: 100%; }
     .product-card { background: var(--surface3); border: 1px solid var(--border); border-radius: 12px; padding: 13px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
     .product-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
-    .product-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+    .product-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: var(--border2); }
+    .product-card:hover::before { background: var(--accent); }
 
-    /* card top stripe colors */
-    .pc-shopee::before     { background: var(--shopee); }
-    .pc-lazada::before     { background: var(--lazada); }
-    .pc-amazon::before     { background: var(--amazon); }
-    .pc-ebay::before       { background: var(--ebay); }
-    .pc-aliexpress::before { background: var(--aliexpress); }
-    .pc-temu::before       { background: var(--temu); }
-    .pc-tiktok::before     { background: var(--tiktok-accent); }
-    .pc-multi::before      { background: linear-gradient(90deg,var(--shopee),var(--lazada),var(--amazon),var(--tiktok-accent)); }
-
-    /* platform badge on card */
-    .card-platform { display: inline-flex; align-items: center; gap: 5px; font-size: 0.63rem; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; margin-bottom: 7px; }
-    .cpb-shopee     { background: rgba(238,77,45,0.15);  color: #ff7a5c; }
-    .cpb-lazada     { background: rgba(74,95,247,0.15);  color: #7b8fff; }
-    .cpb-amazon     { background: rgba(255,153,0,0.15);  color: #ffb733; }
-    .cpb-ebay       { background: rgba(229,50,56,0.15);  color: #ff6b6f; }
-    .cpb-aliexpress { background: rgba(255,71,71,0.15);  color: #ff9090; }
-    .cpb-temu       { background: rgba(250,81,48,0.15);  color: #ff8c72; }
-    .cpb-tiktok     { background: rgba(254,44,85,0.15);  color: #fe6b8a; }
-    .cpb-multi      { background: rgba(245,200,66,0.1);  color: var(--accent); }
+    /* platform badge on card — unified neutral */
+    .card-platform {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase;
+      padding: 3px 7px; border-radius: 5px; margin-bottom: 7px;
+      background: rgba(255,255,255,0.05); color: var(--muted);
+      border: 1px solid var(--border2);
+    }
 
     .card-name { font-size: 0.82rem; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .card-price { font-size: 0.98rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
@@ -163,18 +140,17 @@
     .modal-body { padding: 18px 22px 24px; }
     .modal-desc { font-size: 0.86rem; color: var(--muted); line-height: 1.75; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
 
-    /* platform sections inside modal */
+    /* platform sections inside modal — unified neutral */
     .psec { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
-    .psec-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid var(--border); }
-    .psec-name { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 700; }
-    .psec-logo { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; color: #fff; flex-shrink: 0; }
-    .psl-shopee     { background: var(--shopee); }
-    .psl-lazada     { background: var(--lazada); }
-    .psl-amazon     { background: #232f3e; border: 1px solid var(--amazon); }
-    .psl-ebay       { background: var(--ebay); }
-    .psl-aliexpress { background: var(--aliexpress); }
-    .psl-temu       { background: var(--temu); }
-    .psl-tiktok     { background: #111; border: 1px solid var(--tiktok-accent); }
+    .psec-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+    .psec-name { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 700; color: var(--text); }
+    .psec-logo {
+      width: 22px; height: 22px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.58rem; font-weight: 900; color: var(--muted);
+      background: var(--surface3); border: 1px solid var(--border2);
+      flex-shrink: 0;
+    }
 
     .psec-body { padding: 11px 15px; }
     .prow { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
@@ -184,24 +160,24 @@
     .prow-val.price  { color: var(--accent); font-size: 0.96rem; }
     .prow-val.rating { color: #f5c842; }
 
-    .buy-btn { display: block; width: 100%; padding: 10px; margin-top: 11px; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.18s; border: none; text-align: center; }
-    .bb-shopee     { background: var(--shopee);       color: #fff; }
-    .bb-shopee:hover     { background: #c93a1e; }
-    .bb-lazada     { background: var(--lazada);       color: #fff; }
-    .bb-lazada:hover     { background: #3245d4; }
-    .bb-amazon     { background: var(--amazon);       color: #111; }
-    .bb-amazon:hover     { background: #e68a00; }
-    .bb-ebay       { background: var(--ebay);         color: #fff; }
-    .bb-ebay:hover       { background: #b82029; }
-    .bb-aliexpress { background: var(--aliexpress);   color: #fff; }
-    .bb-aliexpress:hover { background: #cc2a2a; }
-    .bb-temu       { background: var(--temu);         color: #fff; }
-    .bb-temu:hover       { background: #d43d20; }
-    .bb-tiktok     { background: var(--tiktok-accent);color: #fff; }
-    .bb-tiktok:hover     { background: #cc1e42; }
+    /* unified buy button */
+    .buy-btn {
+      display: block; width: 100%; padding: 10px; margin-top: 11px;
+      border-radius: 9px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; font-weight: 700; cursor: pointer;
+      transition: all 0.18s; border: 1px solid var(--border2);
+      text-align: center; background: var(--surface3); color: var(--text);
+    }
+    .buy-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    .best-deal-badge {
+      display: inline-block; background: rgba(245,200,66,0.1);
+      border: 1px solid rgba(245,200,66,0.3); color: var(--accent);
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.5px;
+      padding: 2px 7px; border-radius: 5px; margin-left: 8px; vertical-align: middle;
+    }
 
     .price-compare { margin-top: 14px; padding: 12px 14px; background: rgba(245,200,66,0.06); border: 1px solid rgba(245,200,66,0.15); border-radius: 9px; font-size: 0.8rem; color: var(--accent); text-align: center; font-weight: 600; }
-    .best-deal-badge { display: inline-block; background: rgba(74,210,100,0.12); border: 1px solid rgba(74,210,100,0.3); color: #4ad264; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 5px; margin-left: 8px; vertical-align: middle; }
 
     @media (max-width: 620px) {
       nav, .hero, .main, footer { padding-left: 16px; padding-right: 16px; }
@@ -233,14 +209,14 @@
   <div class="platform-section-wrap">
     <div class="platform-section-label">Filter by platform</div>
     <div class="platform-grid" id="platform-grid">
-      <button class="platform-btn act-all"    data-p="all"         onclick="setPlatform(this)"><span class="dot" style="background:var(--accent)"></span>All Platforms</button>
-      <button class="platform-btn"            data-p="shopee"      onclick="setPlatform(this)"><span class="dot" style="background:var(--shopee)"></span>Shopee</button>
-      <button class="platform-btn"            data-p="lazada"      onclick="setPlatform(this)"><span class="dot" style="background:var(--lazada)"></span>Lazada</button>
-      <button class="platform-btn"            data-p="amazon"      onclick="setPlatform(this)"><span class="dot" style="background:var(--amazon)"></span>Amazon</button>
-      <button class="platform-btn"            data-p="ebay"        onclick="setPlatform(this)"><span class="dot" style="background:var(--ebay)"></span>eBay</button>
-      <button class="platform-btn"            data-p="aliexpress"  onclick="setPlatform(this)"><span class="dot" style="background:var(--aliexpress)"></span>AliExpress</button>
-      <button class="platform-btn"            data-p="temu"        onclick="setPlatform(this)"><span class="dot" style="background:var(--temu)"></span>Temu</button>
-      <button class="platform-btn"            data-p="tiktok"      onclick="setPlatform(this)"><span class="dot" style="background:var(--tiktok-accent)"></span>TikTok Shop</button>
+      <button class="platform-btn active" data-p="all"         onclick="setPlatform(this)"><span class="dot"></span>All Platforms</button>
+      <button class="platform-btn"        data-p="shopee"      onclick="setPlatform(this)"><span class="dot"></span>Shopee</button>
+      <button class="platform-btn"        data-p="lazada"      onclick="setPlatform(this)"><span class="dot"></span>Lazada</button>
+      <button class="platform-btn"        data-p="amazon"      onclick="setPlatform(this)"><span class="dot"></span>Amazon</button>
+      <button class="platform-btn"        data-p="ebay"        onclick="setPlatform(this)"><span class="dot"></span>eBay</button>
+      <button class="platform-btn"        data-p="aliexpress"  onclick="setPlatform(this)"><span class="dot"></span>AliExpress</button>
+      <button class="platform-btn"        data-p="temu"        onclick="setPlatform(this)"><span class="dot"></span>Temu</button>
+      <button class="platform-btn"        data-p="tiktok"      onclick="setPlatform(this)"><span class="dot"></span>TikTok Shop</button>
     </div>
   </div>
 
@@ -307,19 +283,17 @@
 </div>
 
 <script>
-  // ── PASTE YOUR GROQ API KEY BELOW ──
   const GROQ_API_KEY = "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";
   const MODEL = "llama-3.3-70b-versatile";
 
-  // Platform config: key → { label, color, logoClass, btnClass, buyClass, currencyNote }
   const PLATFORMS = {
-    shopee:     { label: 'Shopee Philippines',  color: '#ff7a5c', logoClass: 'psl-shopee',     buyClass: 'bb-shopee',     currency: '₱' },
-    lazada:     { label: 'Lazada Philippines',  color: '#7b8fff', logoClass: 'psl-lazada',     buyClass: 'bb-lazada',     currency: '₱' },
-    amazon:     { label: 'Amazon',              color: '#ffb733', logoClass: 'psl-amazon',     buyClass: 'bb-amazon',     currency: '$'  },
-    ebay:       { label: 'eBay',                color: '#ff6b6f', logoClass: 'psl-ebay',       buyClass: 'bb-ebay',       currency: '$'  },
-    aliexpress: { label: 'AliExpress',          color: '#ff9090', logoClass: 'psl-aliexpress', buyClass: 'bb-aliexpress', currency: '$'  },
-    temu:       { label: 'Temu',                color: '#ff8c72', logoClass: 'psl-temu',       buyClass: 'bb-temu',       currency: '$'  },
-    tiktok:     { label: 'TikTok Shop',         color: '#fe6b8a', logoClass: 'psl-tiktok',     buyClass: 'bb-tiktok',     currency: '₱' },
+    shopee:     { label: 'Shopee Philippines',  currency: '₱' },
+    lazada:     { label: 'Lazada Philippines',  currency: '₱' },
+    amazon:     { label: 'Amazon',              currency: '$'  },
+    ebay:       { label: 'eBay',                currency: '$'  },
+    aliexpress: { label: 'AliExpress',          currency: '$'  },
+    temu:       { label: 'Temu',                currency: '$'  },
+    tiktok:     { label: 'TikTok Shop',         currency: '₱' },
   };
 
   const LOGO_LETTERS = { shopee:'S', lazada:'L', amazon:'A', ebay:'e', aliexpress:'AE', temu:'T', tiktok:'TT' };
@@ -328,10 +302,8 @@
 
   function setPlatform(btn) {
     currentPlatform = btn.dataset.p;
-    document.querySelectorAll('.platform-btn').forEach(b => {
-      b.className = 'platform-btn';
-    });
-    btn.className = `platform-btn act-${currentPlatform}`;
+    document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
 
   function fillPrompt(t) {
@@ -447,13 +419,10 @@ Use realistic 2026 prices. For PH platforms (shopee, lazada, tiktok) use Philipp
 
     products.forEach(p => {
       const activePlatforms = (p.platforms || []).filter(k => PLATFORMS[k]);
-      const cardClass = activePlatforms.length === 1 ? `pc-${activePlatforms[0]}` : 'pc-multi';
-      const badgeClass = activePlatforms.length === 1 ? `cpb-${activePlatforms[0]}` : 'cpb-multi';
       const badgeLabel = activePlatforms.length === 1
         ? PLATFORMS[activePlatforms[0]].label.split(' ')[0]
         : `${activePlatforms.length} Platforms`;
 
-      // best price across platforms
       const prices = activePlatforms
         .map(k => ({ k, v: parseFloat((p[`${k}_price`] || '').replace(/[^\d.]/g,'')) }))
         .filter(x => !isNaN(x.v));
@@ -466,9 +435,9 @@ Use realistic 2026 prices. For PH platforms (shopee, lazada, tiktok) use Philipp
       const avgRating = allRatings.length ? (allRatings.reduce((a,b)=>a+b,0)/allRatings.length).toFixed(1) : null;
 
       const card = document.createElement('div');
-      card.className = `product-card ${cardClass}`;
+      card.className = 'product-card';
       card.innerHTML = `
-        <div class="card-platform ${badgeClass}">${badgeLabel}</div>
+        <div class="card-platform">${escHtml(badgeLabel)}</div>
         <div class="card-name">${escHtml(p.name)}</div>
         <div class="card-price">${escHtml(displayPrice)}</div>
         <div class="card-rating">
@@ -493,7 +462,6 @@ Use realistic 2026 prices. For PH platforms (shopee, lazada, tiktok) use Philipp
 
     let html = `<div class="modal-desc">${escHtml(p.description)}</div>`;
 
-    // find best deal
     const priceList = activePlatforms
       .map(k => ({ k, v: parseFloat((p[`${k}_price`]||'').replace(/[^\d.]/g,'')) }))
       .filter(x => !isNaN(x.v));
@@ -512,8 +480,8 @@ Use realistic 2026 prices. For PH platforms (shopee, lazada, tiktok) use Philipp
       <div class="psec">
         <div class="psec-head">
           <div class="psec-name">
-            <div class="psec-logo ${cfg.logoClass}">${LOGO_LETTERS[k]}</div>
-            <span style="color:${cfg.color}">${cfg.label}</span>
+            <div class="psec-logo">${LOGO_LETTERS[k]}</div>
+            <span>${escHtml(cfg.label)}</span>
             ${isBest ? '<span class="best-deal-badge">Best Price</span>' : ''}
           </div>
         </div>
@@ -521,12 +489,11 @@ Use realistic 2026 prices. For PH platforms (shopee, lazada, tiktok) use Philipp
           <div class="prow"><span class="prow-label">Price</span><span class="prow-val price">${escHtml(price||'—')}</span></div>
           <div class="prow"><span class="prow-label">Rating</span><span class="prow-val rating">${rating ? '★ '+rating+' / 5' : '—'}</span></div>
           <div class="prow"><span class="prow-label">Units Sold</span><span class="prow-val">${escHtml(sold||'—')}</span></div>
-          ${link ? `<button class="buy-btn ${cfg.buyClass}" onclick="window.open('${link}','_blank')">Buy on ${cfg.label.split(' ')[0]} →</button>` : ''}
+          ${link ? `<button class="buy-btn" onclick="window.open('${link}','_blank')">Buy on ${escHtml(cfg.label.split(' ')[0])} →</button>` : ''}
         </div>
       </div>`;
     });
 
-    // price comparison summary
     if (priceList.length > 1) {
       priceList.sort((a,b) => a.v - b.v);
       const cheapestK = priceList[0].k;
